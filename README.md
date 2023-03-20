@@ -19,6 +19,8 @@ would like to join this shift to between company collaboration.
 ### Speakers:
 
 Thomas Neitmann, Associate Director Data Science, Denali Therapeutics
+
 Pawel Rucki, Chief Engineer (clinical insights codebase), Roche
+
 Christina Fillmore, Data Science Leader, GSK
 
