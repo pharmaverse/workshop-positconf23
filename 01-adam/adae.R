@@ -1,0 +1,108 @@
+# Name: ADAE
+#
+# Label: Adverse Event Analysis Dataset
+#
+# Input: ae, adsl
+library(admiral)
+library(haven)
+library(dplyr)
+library(lubridate)
+library(xportr)
+
+# Load source datasets ----
+adsl <- read_xpt("data/adsl.xpt")
+ae <- read_xpt("data/ae.xpt")
+
+# When SAS datasets are imported into R using haven::read_sas(), missing
+# character values from SAS appear as "" characters in R, instead of appearing
+# as NA values. Further details can be obtained via the following link:
+# https://pharmaverse.github.io/admiral/cran-release/articles/admiral.html#handling-of-missing-values # nolint
+
+ae <- convert_blanks_to_na(ae)
+ex <- convert_blanks_to_na(ex_single)
+
+
+# Derivations ----
+
+# Get list of ADSL vars required for derivations
+adsl_vars <- exprs(TRTSDT, TRTEDT, DTHDT, EOSDT)
+
+adae <- ae %>%
+  # join adsl to ae
+  derive_vars_merged(
+    dataset_add = adsl,
+    new_vars = adsl_vars,
+    by = exprs(STUDYID, USUBJID)
+  ) %>%
+  ## Derive analysis start time ----
+  derive_vars_dtm(
+    dtc = AESTDTC,
+    new_vars_prefix = "AST",
+    highest_imputation = "M",
+    min_dates = exprs(TRTSDT)
+  ) %>%
+  ## Derive analysis end time ----
+  derive_vars_dtm(
+    dtc = AEENDTC,
+    new_vars_prefix = "AEN",
+    highest_imputation = "M",
+    date_imputation = "last",
+    time_imputation = "last",
+    max_dates = exprs(DTHDT, EOSDT)
+  ) %>%
+  ## Derive analysis end/start date ----
+  derive_vars_dtm_to_dt(exprs(ASTDTM, AENDTM)) %>%
+  ## Derive analysis start relative day and  analysis end relative day ----
+  derive_vars_dy(
+    reference_date = TRTSDT,
+    source_vars = exprs(ASTDT, AENDT)
+  ) %>%
+  ## Derive analysis duration (value and unit) ----
+  derive_vars_duration(
+    new_var = ADURN,
+    new_var_unit = ADURU,
+    start_date = ASTDT,
+    end_date = AENDT,
+    in_unit = "days",
+    out_unit = "days",
+    add_one = TRUE,
+    trunc_out = FALSE
+  )
+
+adae <- adae %>%
+  ## Derive severity / causality / ... ----
+  mutate(
+    ASEV = AESEV,
+    AREL = AEREL
+  ) %>%
+  ## Derive treatment emergent flag ----
+  derive_var_trtemfl(
+    trt_start_date = TRTSDT,
+    trt_end_date = TRTEDT,
+    end_window = 30
+  ) %>%
+  ## Derive occurrence flags: first occurrence of most severe AE ----
+  # create numeric value ASEVN for severity
+  mutate(
+    ASEVN = as.integer(factor(ASEV, levels = c("MILD", "MODERATE", "SEVERE", "DEATH THREATENING")))
+  ) %>%
+  restrict_derivation(
+    derivation = derive_var_extreme_flag,
+    args = params(
+      by_vars = exprs(USUBJID),
+      order = exprs(desc(ASEVN), ASTDTM, AESEQ),
+      new_var = AOCCIFL,
+      mode = "first"
+    ),
+    filter = TRTEMFL == "Y"
+  )
+
+# Join all ADSL with AE
+adae <- adae %>%
+  derive_vars_merged(
+    dataset_add = select(adsl, !!!negate_vars(adsl_vars)),
+    by_vars = exprs(STUDYID, USUBJID)
+  )
+
+# Save output ----
+xportr_write(adae, "data/adae.xpt")
