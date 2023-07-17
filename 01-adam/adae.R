@@ -7,6 +7,7 @@ library(admiral)
 library(haven)
 library(dplyr)
 library(lubridate)
+library(stringr)
 library(xportr)
 
 # Load source datasets ----
@@ -81,20 +82,24 @@ adae <- adae %>%
     trt_end_date = TRTEDT,
     end_window = 30
   ) %>%
-  ## Derive occurrence flags: first occurrence of most severe AE ----
-  # create numeric value ASEVN for severity
+  ## Derive Customized Query 01
   mutate(
-    ASEVN = as.integer(factor(ASEV, levels = c("MILD", "MODERATE", "SEVERE", "DEATH THREATENING")))
+    CQ01NAM = if_else(
+      str_detect(AEDECOD, "APPLICATION|DERMATITIS|ERYTHEMA|BLISTER|SKIN AND SUBCUTANEOUS TISSUE DISORDERS") &
+        !str_detect(AEDECOD, "COLD SWEAT|HYPERHIDROSIS|ALOPECIA"),
+      "DERMATOLOGIC EVENTS",
+      NA_character_
+    )
   ) %>%
+  ## Derive 1st Occurrence 01 Flag for CQ01 ----
   restrict_derivation(
     derivation = derive_var_extreme_flag,
     args = params(
       by_vars = exprs(USUBJID),
-      order = exprs(desc(ASEVN), ASTDTM, AESEQ),
-      new_var = AOCCIFL,
+      order = exprs(ASTDT, AESEQ),
+      new_var = AOCC01FL,
       mode = "first"
-    ),
-    filter = TRTEMFL == "Y"
+    ), filter = TRTEMFL == "Y" & CQ01NAM == "DERMATOLOGIC EVENTS"
   )
 
 # Join all ADSL with AE
