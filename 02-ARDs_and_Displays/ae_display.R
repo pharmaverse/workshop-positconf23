@@ -22,13 +22,13 @@ adsl <- read_xpt("data/02-ARDs_and_Displays/adae.xpt")
 ## Initialize ARD from data
 
 ae_ardis <- adae %>%
-  ardis(treat_var = TRT01A) %>%
+  ardis(treat_var = TRT01A, where = SAFFL == "Y") %>%
   set_pop_data(adsl)
 
 ## Create an "Any Body System" Layer
 ## By not specifying the grouping, count each participant once
 
-ae_ardis <- ae_ardis %>%
+ae_ardis %>%
   add_layer(
     group_count(
       target_var = "Any Body System"
@@ -44,7 +44,7 @@ ae_ardis <- ae_ardis %>%
 ## Now for every individual AE Body System/AE Term, get the total counts and
 ## AE by participant
 
-ae_ardis <- ae_ardis %>%
+ae_ardis %>%
   add_layer(
     group_count(
       target_var = vars(AEBODSYS, AETERM)
@@ -139,7 +139,7 @@ ae_tfrmt <- ae_tfrmt %>%
       frmt_structure(
         group_val = ".default",  # all groups
         label_val = ".default", # all labels
-        n = frmt("[X]")
+        n = frmt("[XXX]")
       )
     )
   )
@@ -174,5 +174,25 @@ ae_tfrmt <- ae_tfrmt %>%
 print_to_gt(ae_tfrmt, .data = ae_ard_filtered)
 
 
+## Define column alignment
 
+ae_tfrmt <- ae_tfrmt %>%
+  tfrmt(
+    col_style_plan = col_style_plan(
+
+      # Tidyselect semantics
+      col_style_structure(
+        col = everything(), ## all columns
+        align = c("(","["), ## align on parenthesis and square braces
+      ),
+
+      # Another selection afterwards overrides previous styling
+      col_style_structure(
+        col = span_structure(col1 = "Placebo"), ## all placebo columns
+        align = "right", ## align to right side of column
+      )
+    )
+  )
+
+print_to_gt(ae_tfrmt, .data = ae_ard_filtered)
 
