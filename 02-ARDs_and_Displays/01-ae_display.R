@@ -8,6 +8,7 @@ library(haven)
 library(ardis)
 library(dplyr)
 library(tfrmt)
+library(gt)
 
 # Load source adae and adsl AdAM datasets ----
 adae <- read_xpt("data/02-ARDs_and_Displays/adae.xpt")
@@ -195,4 +196,16 @@ ae_tfrmt <- ae_tfrmt %>%
   )
 
 print_to_gt(ae_tfrmt, .data = ae_ard_filtered)
+
+
+### Save the table into a preferred format. since this is a gt, it can go to
+### a wide variety of outputs, or be customized futher.
+
+print_to_gt(ae_tfrmt, .data = ae_ard_filtered) %>%
+  gtsave("ae_table.docx")
+
+### Save the tfrmt as a json so we can potentially use it in the future.
+
+print_to_json(ae_tfrmt, "ae_tfrmt.json")
+
 
