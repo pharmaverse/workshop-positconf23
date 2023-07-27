@@ -98,10 +98,7 @@ adsl <- dm %>%
   ## derive treatment start date (TRTSDTM) ----
   derive_vars_merged(
     dataset_add = ex_ext,
-    filter_add = (EXDOSE > 0 |
-      (EXDOSE == 0 &
-        str_detect(EXTRT, "PLACEBO"))) &
-      !is.na(EXSTDTM),
+    filter_add = (EXDOSE > 0 | (EXDOSE == 0 & str_detect(EXTRT, "PLACEBO"))) & !is.na(EXSTDTM),
     new_vars = exprs(TRTSDTM = EXSTDTM, TRTSTMF = EXSTTMF),
     order = exprs(EXSTDTM, EXSEQ),
     mode = "first",
@@ -110,9 +107,7 @@ adsl <- dm %>%
   ## derive treatment end date (TRTEDTM) ----
   derive_vars_merged(
     dataset_add = ex_ext,
-    filter_add = (EXDOSE > 0 |
-      (EXDOSE == 0 &
-        str_detect(EXTRT, "PLACEBO"))) & !is.na(EXENDTM),
+    filter_add = (EXDOSE > 0 | (EXDOSE == 0 & str_detect(EXTRT, "PLACEBO"))) & !is.na(EXENDTM),
     new_vars = exprs(TRTEDTM = EXENDTM, TRTETMF = EXENTMF),
     order = exprs(EXENDTM, EXSEQ),
     mode = "last",
