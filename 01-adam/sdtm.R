@@ -1,4 +1,5 @@
 library(admiral.test)
+library(dolyr)
 library(xportr)
 
 data("admiral_dm")
@@ -6,6 +7,10 @@ data("admiral_ds")
 data("admiral_ex")
 data("admiral_ae")
 data("admiral_lb")
+data("admiral_vs")
+
+admiral_vs <- admiral_vs %>%
+  filter(VSTEST %in% c("Height", "Weight"))
 
 sdtms <- ls(pattern = "^admiral_")
 
