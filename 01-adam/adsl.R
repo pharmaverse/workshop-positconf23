@@ -16,6 +16,7 @@ ds <- read_xpt("data/ds.xpt")
 ex <- read_xpt("data/ex.xpt")
 ae <- read_xpt("data/ae.xpt")
 lb <- read_xpt("data/lb.xpt")
+vs <- read_xpt("data/vs.xpt")
 
 # When SAS datasets are imported into R using haven::read_sas(), missing
 # character values from SAS appear as "" characters in R, instead of appearing
@@ -27,6 +28,7 @@ ds <- convert_blanks_to_na(ds)
 ex <- convert_blanks_to_na(ex)
 ae <- convert_blanks_to_na(ae)
 lb <- convert_blanks_to_na(lb)
+vs <- convert_blanks_to_na(vs)
 
 # User defined functions ----
 
@@ -91,6 +93,18 @@ ex_ext <- ex %>%
   )
 
 adsl <- dm %>%
+  derive_vars_transposed(
+    select(vs, USUBJID, VSTESTCD, VSSTRESN, VSBLFL),
+    by_vars = exprs(USUBJID),
+    key = VSTESTCD,
+    value = VSSTRESN,
+    filter = VSTESTCD %in% c("HEIGHT", "WEIGHT") & VSBLFL == "Y"
+  ) %>%
+  rename(HEIGHTBL = HEIGHT, WEIGHTBL = WEIGHT) %>%
+  select(-VSBLFL) %>%
+  mutate(BMIBL = compute_bmi(HEIGHTBL, WEIGHTBL))
+
+adsl <- adsl %>%
   ## derive treatment variables (TRT01P, TRT01A) ----
   # See also the "Visit and Period Variables" vignette
   # (https://pharmaverse.github.io/admiral/cran-release/articles/visits_periods.html#treatment_adsl)
@@ -98,10 +112,7 @@ adsl <- dm %>%
   ## derive treatment start date (TRTSDTM) ----
   derive_vars_merged(
     dataset_add = ex_ext,
-    filter_add = (EXDOSE > 0 |
-      (EXDOSE == 0 &
-        str_detect(EXTRT, "PLACEBO"))) &
-      !is.na(EXSTDTM),
+    filter_add = (EXDOSE > 0 | (EXDOSE == 0 & str_detect(EXTRT, "PLACEBO"))) & !is.na(EXSTDTM),
     new_vars = exprs(TRTSDTM = EXSTDTM, TRTSTMF = EXSTTMF),
     order = exprs(EXSTDTM, EXSEQ),
     mode = "first",
@@ -110,9 +121,7 @@ adsl <- dm %>%
   ## derive treatment end date (TRTEDTM) ----
   derive_vars_merged(
     dataset_add = ex_ext,
-    filter_add = (EXDOSE > 0 |
-      (EXDOSE == 0 &
-        str_detect(EXTRT, "PLACEBO"))) & !is.na(EXENDTM),
+    filter_add = (EXDOSE > 0 | (EXDOSE == 0 & str_detect(EXTRT, "PLACEBO"))) & !is.na(EXENDTM),
     new_vars = exprs(TRTEDTM = EXENDTM, TRTETMF = EXENTMF),
     order = exprs(EXENDTM, EXSEQ),
     mode = "last",
