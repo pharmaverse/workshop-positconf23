@@ -7,7 +7,7 @@
 library(haven)
 library(ardis)
 library(dplyr)
-library(tfrmt)
+library(readr)
 
 # Load source adsl AdAM dataset ----
 adsl <- read_xpt("data/02-ARDs_and_Displays/adsl.xpt")
@@ -17,7 +17,8 @@ adsl <- read_xpt("data/02-ARDs_and_Displays/adsl.xpt")
 
 ## Initialize ard
 demog_ardis <- adsl %>%
-  ardis(treat_var = TRT01A, where = SAFFL == "Y")
+  filter( SAFFL == "Y" ) %>%
+  ardis(treat_var = TRT01A)
 
 
 ## Add a total group column
@@ -66,4 +67,11 @@ demog_ardis <- demog_ardis %>%
 ## Build the ARD
 demog_ard <- demog_ardis %>%
   build()
+
+## Save ARD file
+demog_ard %>%
+  write_csv(file = "demog_ard.csv")
+
+
+
 
