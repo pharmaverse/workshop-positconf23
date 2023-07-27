@@ -9,7 +9,7 @@ the next generation backbone for clinical trial reporting. As of March 2023, 123
 10 companies have contributed to the pharmaverse packages - and this workshop is about how you can both 
 leverage their work to date and get involved to help evolve this important collection of efforts.
 
-We will create ADaM datasets, prepare tables and figures as well as interactive shiny apps. This course 
+We will create ADaM datasets, prepare ARDs, create tables and figures as well as interactive shiny apps. This course 
 will also give a grounding in how to navigate pharmaverse R packages, and their repositories, and 
 understand how you can contribute.
 
@@ -22,5 +22,5 @@ Thomas Neitmann, Associate Director Data Science, Denali Therapeutics
 
 Pawel Rucki, Chief Engineer (clinical insights codebase), Roche
 
-Christina Fillmore, Data Science Leader, GSK
+Ellis Hughes, Data Science Leader, GSK
 
