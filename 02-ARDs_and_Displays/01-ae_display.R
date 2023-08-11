@@ -12,7 +12,7 @@ library(gt)
 
 # Load source adae and adsl AdAM datasets ----
 adae <- read_xpt("data/02-ARDs_and_Displays/adae.xpt")
-adsl <- read_xpt("data/02-ARDs_and_Displays/adae.xpt")
+adsl <- read_xpt("data/02-ARDs_and_Displays/adsl.xpt")
 
 
 # AE ARD Generation ----
@@ -23,6 +23,7 @@ adsl <- read_xpt("data/02-ARDs_and_Displays/adae.xpt")
 ## Initialize ARD from data
 
 ae_ardis <- adae %>%
+  filter(SAFFL == "Y") %>%
   ardis(treat_var = TRT01A, where = SAFFL == "Y") %>%
   set_pop_data(adsl)
 
@@ -92,6 +93,7 @@ ae_ard_processed <- ae_ard %>%
 
 ## Filter to remove cases where pct is less than 5% for all groups
 ae_ard_filtered <- ae_ard_processed %>%
+  filter(col1 != "Screen Failure") %>%
   group_by(AEBODSYS, AETERM) %>%
   mutate(
     keep_groups = all(value[param  == "distinct_pct"] > .05),
