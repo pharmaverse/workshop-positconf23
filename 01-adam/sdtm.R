@@ -1,5 +1,5 @@
 library(admiral.test)
-library(dolyr)
+library(dplyr)
 library(xportr)
 
 data("admiral_dm")
