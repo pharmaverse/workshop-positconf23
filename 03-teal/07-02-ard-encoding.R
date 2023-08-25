@@ -82,7 +82,6 @@ app <- init(
             ## add code here!
             ## use: treat_var = !!trt_var_r()
             ## use: target_var = vars(!!ae_body_sys_r(), !!ae_term_r())
-
           })
 
           ae_ard_r <- reactive({
