@@ -17,9 +17,9 @@ library(ardis)
 library(tfrmt)
 library(gt)
 
-adsl <- haven::read_xpt("data/02-ARDs_and_Displays/adsl.xpt")
-adae <- haven::read_xpt("data/02-ARDs_and_Displays/adae.xpt") %>%
-  dplyr::select(c("STUDYID", "USUBJID", "SUBJID"), !any_of(names(adsl)))
+adsl <- read_xpt("data/02-ARDs_and_Displays/adsl.xpt")
+adae <- read_xpt("data/02-ARDs_and_Displays/adae.xpt") %>%
+  select(c("STUDYID", "USUBJID", "SUBJID"), !any_of(names(adsl)))
 
 app <- init(
   data = cdisc_data(
@@ -135,14 +135,14 @@ library(ardis)
 library(tfrmt)
 library(gt)
 
-adsl <- haven::read_xpt("data/02-ARDs_and_Displays/adsl.xpt")
-adae <- haven::read_xpt("data/02-ARDs_and_Displays/adae.xpt") %>%
-  dplyr::select(c("STUDYID", "USUBJID", "SUBJID"), !any_of(names(adsl)))
+adsl <- read_xpt("data/02-ARDs_and_Displays/adsl.xpt")
+adae <- read_xpt("data/02-ARDs_and_Displays/adae.xpt") %>%
+  select(c("STUDYID", "USUBJID", "SUBJID"), !any_of(names(adsl)))
 
 app <- init(
   data = cdisc_data(
-    cdisc_dataset("ADSL", adsl),
-    cdisc_dataset("ADAE", adae)
+    cdisc_dataset("ADSL", adsl, code = "haven::read_xpt(\"data/02-ARDs_and_Displays/adsl.xpt\")"),
+    cdisc_dataset("ADAE", adae, code = "haven::read_xpt(\"data/02-ARDs_and_Displays/adae.xpt\")")
   ),
   modules = list(
     module(

@@ -10,9 +10,9 @@ library(ardis)
 library(tfrmt)
 library(gt)
 
-adsl <- haven::read_xpt("data/02-ARDs_and_Displays/adsl.xpt")
-adae <- haven::read_xpt("data/02-ARDs_and_Displays/adae.xpt") %>%
-  dplyr::select(c("STUDYID", "USUBJID", "SUBJID"), !any_of(names(adsl)))
+adsl <- read_xpt("data/02-ARDs_and_Displays/adsl.xpt")
+adae <- read_xpt("data/02-ARDs_and_Displays/adae.xpt") %>%
+  select(c("STUDYID", "USUBJID", "SUBJID"), !any_of(names(adsl)))
 
 app <- init(
   data = cdisc_data(
@@ -83,9 +83,9 @@ library(ardis)
 library(tfrmt)
 library(gt)
 
-adsl <- haven::read_xpt("data/02-ARDs_and_Displays/adsl.xpt")
-adae <- haven::read_xpt("data/02-ARDs_and_Displays/adae.xpt") %>%
-  dplyr::select(c("STUDYID", "USUBJID", "SUBJID"), !any_of(names(adsl)))
+adsl <- read_xpt("data/02-ARDs_and_Displays/adsl.xpt")
+adae <- read_xpt("data/02-ARDs_and_Displays/adae.xpt") %>%
+  select(c("STUDYID", "USUBJID", "SUBJID"), !any_of(names(adsl)))
 
 app <- init(
   data = cdisc_data(
@@ -171,7 +171,7 @@ app <- init(
 
           ae_ard_filtered_r <- reactive({
             ae_ard_processed_r() %>%
-              filter(!(param == "distinct_pct" & is.na(col1))) %>%
+              filter(col1 != "Screen Failure") %>%
               group_by(AEBODSYS, AETERM) %>%
               mutate(
                 keep_groups = all(value[param == "distinct_pct"] > .05),

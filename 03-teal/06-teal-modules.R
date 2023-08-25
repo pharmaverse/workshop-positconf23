@@ -10,19 +10,20 @@ library(teal)
 library(haven)
 library(dplyr)
 library(teal.modules.general)
+# additional extensions to teal.modules.general
 library(sparkline)
 library(ggpmisc)
 library(ggpp)
 library(goftest)
 library(teal.modules.clinical)
 
-adsl <- haven::read_xpt("data/02-ARDs_and_Displays/adsl.xpt") %>%
-  dplyr::mutate(
+adsl <- read_xpt("data/02-ARDs_and_Displays/adsl.xpt") %>%
+  mutate(
     ARM = as.factor(ARM),
     ARMCD = as.factor(ARMCD)
   )
-adae <- haven::read_xpt("data/02-ARDs_and_Displays/adae.xpt") %>%
-  dplyr::select(c("STUDYID", "USUBJID", "SUBJID"), !any_of(names(adsl)))
+adae <- read_xpt("data/02-ARDs_and_Displays/adae.xpt") %>%
+  select(c("STUDYID", "USUBJID", "SUBJID"), !any_of(names(adsl)))
 
 adsl_vars_numeric <- names(Filter(isTRUE, sapply(adsl, is.numeric)))
 adsl_vars_factor <- names(Filter(function(x) {

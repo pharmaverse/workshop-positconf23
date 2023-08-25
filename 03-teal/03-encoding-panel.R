@@ -89,6 +89,10 @@ shinyApp(app$ui, app$server)
 #############################
 # ANSWER (part 2):
 #############################
+library(teal)
+library(teal.widgets)
+library(ggplot2)
+
 app <- init(
   data = iris,
   modules = list(

@@ -5,6 +5,7 @@
 # See vignette: https://insightsengineering.github.io/teal.code/main/articles/qenv.html
 #############################
 library(teal.code)
+library(magrittr)
 
 empty_qenv <- new_qenv()
 print(empty_qenv)
