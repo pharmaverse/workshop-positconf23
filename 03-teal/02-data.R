@@ -4,7 +4,7 @@
 #
 # Hints:
 # ?teal::init -> `data` argument
-# Add a new `data` argument to the module server function and then use it with `data$<dataset name>()` (note).
+# Add a new `data` argument to the module server function and then use it with `data$<dataset name>()`.
 # See vignette: https://insightsengineering.github.io/teal/main/articles/including-general-data-in-teal.html
 #############################
 library(teal)
@@ -26,7 +26,7 @@ shinyApp(app$ui, app$server)
 # ?teal::init -> `data` argument
 # ?teal.data::cdisc_data
 # ?teal.data::cdisc_dataset
-# Add a new `data` argument to the module server function and then use it with `data$<dataset name>()` (note).
+# Add a new `data` argument to the module server function and then use it with `data$<dataset name>()`.
 # See vignette: https://insightsengineering.github.io/teal/main/articles/including-adam-data-in-teal.html
 #############################
 library(haven)
